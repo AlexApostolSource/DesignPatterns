@@ -7,6 +7,10 @@
 
 import Foundation
 
+///
+/// Abstract Factory define un contrato para crear familias de objetos relacionados (las “piezas”), sin exponer sus clases concretas. Luego, el cliente (no la fábrica) ensambla esas piezas para construir el objeto/agregado mayor. Cambiando la fábrica concreta cambias toda la variante de la familia sin tocar el cliente.
+///
+
 protocol Machine {
    var name: String { get}
 }
@@ -24,6 +28,7 @@ struct CardioWeightRoom: Room {
 }
 
 // Familias concretas
+// Sí. En tu diseño, las fábricas concretas son StandardGymFactory y PremiumGymFactory
 final class StandardGymFactory: GymFactory {
     func makeCardioRoom() -> Room { CardioWeightRoom() }
     func makeWeightsRoom() -> Room { WeightRoom() }
@@ -57,14 +62,6 @@ protocol GymFactory {
 final class Gym {
     private(set) var rooms: [Room] = []
     func add(_ room: Room) { rooms.append(room) }
-}
-
-final class SynergymGym {
-    let rooms: [Room]
-
-    init(rooms: [Room]) {
-        self.rooms = rooms
-    }
 }
 
 final class GymAssembler {
