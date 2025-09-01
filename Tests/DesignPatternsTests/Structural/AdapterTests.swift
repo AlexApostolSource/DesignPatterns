@@ -33,7 +33,7 @@ class AdapterRealWorld: XCTestCase {
     /// It just tells a compiler that both SDKs have the same interface.
 
     func testAdapterRealWorld() {
-        AppConfig(remoteConfig: FirebaseRemoteConfig()).getFeatureFlag(forKey: "new_feature")
+        AppConfig(remoteConfig: FirebaseRemoteConfigAdapter()).getFeatureFlag(forKey: "new_feature")
         AppConfig(remoteConfig: GrowthBookRemoteConfig()).getFeatureFlag(forKey: "new_feature")
     }
 }
