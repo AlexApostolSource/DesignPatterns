@@ -21,7 +21,7 @@ protocol AppLoader: Sendable {
 }
 
 protocol AppLoaderInteractor: Sendable {
-    func loadApp() async throws
+    func loadApp() async throws 
 }
 
 final actor AppStateManager: AppLoader {
