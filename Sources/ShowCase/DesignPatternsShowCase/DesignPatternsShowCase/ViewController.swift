@@ -6,9 +6,15 @@
 //
 //
 import UIKit
+import SwiftUI
 
 class ViewController: UITableViewController {
-    private let katas: [UIViewController] = [MassivePostsViewController()]
+    private let katas: [UIViewController] = [
+        MassivePostsViewController(),
+        UIHostingController(rootView: PokemonListBadView()),
+        UIHostingController(rootView: WeatherBadView()),
+        UIHostingController(rootView: SpaceXBadView())
+    ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
