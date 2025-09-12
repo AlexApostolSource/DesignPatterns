@@ -10,7 +10,7 @@ import SwiftUI
 
 class ViewController: UITableViewController {
     private let katas: [UIViewController] = [
-        MassivePostsViewController(),
+        Kata1FactoryMethod.createKata1(),
         UIHostingController(rootView: PokemonListBadView()),
         UIHostingController(rootView: WeatherBadView()),
         UIHostingController(rootView: SpaceXBadView())

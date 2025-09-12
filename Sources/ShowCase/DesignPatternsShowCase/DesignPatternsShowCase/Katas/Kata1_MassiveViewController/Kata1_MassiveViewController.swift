@@ -12,11 +12,18 @@
 
 import UIKit
 
-struct JPPost: Codable {
+public struct JPPost: Codable {
     let id: Int
     let userId: Int
     let title: String
     let body: String
+
+    public init(id: Int, userId: Int, title: String, body: String) {
+        self.id = id
+        self.userId = userId
+        self.title = title
+        self.body = body
+    }
 }
 
 final class MassivePostsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {

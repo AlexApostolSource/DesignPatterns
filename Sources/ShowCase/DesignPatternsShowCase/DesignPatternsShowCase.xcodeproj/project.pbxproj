@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CB6BEB0B2E735070008600EA /* DesignPatterns in Frameworks */ = {isa = PBXBuildFile; productRef = CB6BEB0A2E735070008600EA /* DesignPatterns */; };
+		CBE2D9682E74798D00915EB3 /* NetworkLayer in Frameworks */ = {isa = PBXBuildFile; productRef = CBE2D9672E74798D00915EB3 /* NetworkLayer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CB6BEB0B2E735070008600EA /* DesignPatterns in Frameworks */,
+				CBE2D9682E74798D00915EB3 /* NetworkLayer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +117,7 @@
 			name = DesignPatternsShowCase;
 			packageProductDependencies = (
 				CB6BEB0A2E735070008600EA /* DesignPatterns */,
+				CBE2D9672E74798D00915EB3 /* NetworkLayer */,
 			);
 			productName = DesignPatternsShowCase;
 			productReference = CB6BEAA92E734F84008600EA /* DesignPatternsShowCase.app */;
@@ -173,6 +176,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CB6BEB092E735070008600EA /* XCLocalSwiftPackageReference "../../../../DesignPatterns" */,
+				CBE2D9662E74798D00915EB3 /* XCLocalSwiftPackageReference "../../../../../NetworkLayer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CB6BEAAA2E734F84008600EA /* Products */;
@@ -498,12 +502,20 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../../../DesignPatterns;
 		};
+		CBE2D9662E74798D00915EB3 /* XCLocalSwiftPackageReference "../../../../../NetworkLayer" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../../../NetworkLayer;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		CB6BEB0A2E735070008600EA /* DesignPatterns */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignPatterns;
+		};
+		CBE2D9672E74798D00915EB3 /* NetworkLayer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkLayer;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
