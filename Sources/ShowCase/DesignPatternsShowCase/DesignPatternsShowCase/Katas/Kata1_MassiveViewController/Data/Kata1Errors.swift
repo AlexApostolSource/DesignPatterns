@@ -8,4 +8,10 @@
 
 public enum Kata1Errors: Error {
     case requestFailed(underlyingError: Error)
+    case failedFetchingLocalDataSourcePosts(underlyingError: Error)
+    case failedFetchingRemoteDataSourcePosts(underlyingError: Error)
+    case failedCodingPosts(underlyingError: Error)
+    case failedWriteToDisk(underlyingError: Error)
+    case failedReadFromDisk(underlyingError: Error)
+    case failedDecodingPosts(underlyingError: Error)
 }
