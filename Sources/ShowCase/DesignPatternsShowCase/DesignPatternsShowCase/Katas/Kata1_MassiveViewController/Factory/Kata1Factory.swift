@@ -27,8 +27,15 @@ struct Kata1FactoryMethod: Kata1FactoryMethodProtocol {
             localDataSource: localDataSource
         )
 
+        let kata1UseCase = Kata1GetPostsUseCaseOperaration(
+            repository: kata1Repository,
+            mapper: Kata1GetPostsUseCaseOperarationMapper()
+        )
+
+        let viewModel = Kata1ViewModel(useCase: kata1UseCase)
+
        
-        return MassivePostsViewController()
+        return MassivePostsViewController(viewModel: viewModel)
     }
 }
 

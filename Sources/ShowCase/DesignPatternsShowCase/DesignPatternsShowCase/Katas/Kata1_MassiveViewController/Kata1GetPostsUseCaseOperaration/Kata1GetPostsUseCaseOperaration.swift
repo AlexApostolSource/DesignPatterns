@@ -6,10 +6,10 @@
 //
 
 protocol Kata1GetPostsUseCaseOperarationProtocol {
-    func getPosts(page: Int) async throws -> [JPPost]
+    func getPosts(page: Int) async throws -> [Kata1Post]
 }
 
-struct Kata1GetPostsUseCaseOperaration {
+struct Kata1GetPostsUseCaseOperaration: Kata1GetPostsUseCaseOperarationProtocol {
     private let repository: Kata1Repository
     private let mapper: Kata1GetPostsUseCaseOperarationMapperProtocol
 
