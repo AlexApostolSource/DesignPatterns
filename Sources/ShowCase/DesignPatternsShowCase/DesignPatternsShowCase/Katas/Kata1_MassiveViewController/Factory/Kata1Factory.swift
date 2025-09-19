@@ -32,7 +32,12 @@ struct Kata1FactoryMethod: Kata1FactoryMethodProtocol {
             mapper: Kata1GetPostsUseCaseOperarationMapper()
         )
 
-        let viewModel = Kata1ViewModel(useCase: kata1UseCase)
+        let kata1Facade = PostsServiceFacade(
+            useCase: kata1UseCase,
+            analytics: Kata1AnalyticsStdout()
+        )
+
+        let viewModel = Kata1ViewModel(facade: kata1Facade)
 
        
         return MassivePostsViewController(viewModel: viewModel)

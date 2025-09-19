@@ -20,29 +20,32 @@ protocol Kata1ViewModelProtocol {
     var driver: AnyPublisher<Kata1ViewModelState, Never> { get }
 }
 
-struct Kata1ViewModel: Kata1ViewModelProtocol {
+import Combine
 
-    private let useCase: Kata1GetPostsUseCaseOperarationProtocol
-    var driver: AnyPublisher<Kata1ViewModelState, Never>  {
-        signalPassthrough.eraseToAnyPublisher()
-    }
-    private var signalPassthrough: PassthroughSubject<Kata1ViewModelState, Never> = .init()
+@MainActor
+final class Kata1ViewModel: Kata1ViewModelProtocol {
+    private let facade: PostsServiceFacadeProtocol
+    private let pageSize = 20
+    private var currentPage = 1
 
-    init(useCase: Kata1GetPostsUseCaseOperarationProtocol) {
-        self.useCase = useCase
+    private let subject = CurrentValueSubject<Kata1ViewModelState, Never>(.void)
+    var driver: AnyPublisher<Kata1ViewModelState, Never> { subject.eraseToAnyPublisher() }
+
+    init(facade: PostsServiceFacadeProtocol) {
+        self.facade = facade
     }
 
-    func viewDidLoad() {
-        signalPassthrough.send(.void)
-    }
+    func viewDidLoad() { subject.send(.void) }
 
     func getPosts() async throws {
-        signalPassthrough.send( .loading)
-        do {
-            let posts = try await self.useCase.getPosts(page: 1)
-            signalPassthrough.send(.success(posts))
-        } catch {
-            signalPassthrough.send(.failure(error))
+        subject.send(.loading)
+        let result = await facade.fetch(page: currentPage)
+        switch result {
+        case .success(let posts):
+            subject.send(.success(posts))
+            currentPage += 1
+        case .failure(let error):
+            subject.send(.failure(error))
         }
     }
 }

@@ -53,9 +53,10 @@ final class MassivePostsViewController: UIViewController, UITableViewDataSource,
         cancellable = nil
     }
 
-    @MainActor
     private func handleState() {
-        cancellable = viewModel.driver.sink { [weak self] state in
+        cancellable = viewModel.driver
+            .receive(on: RunLoop.main)
+            .sink { [weak self] state in
             switch state {
                 case .loading:
                 print("Loading...")
@@ -63,6 +64,7 @@ final class MassivePostsViewController: UIViewController, UITableViewDataSource,
                 self?.posts = posts
                 self?.tableView.reloadData()
             case .failure(let error):
+                // Show error view
                 print("Error: \(error)")
             case .void:
                 Task { [weak self] in
@@ -92,4 +94,5 @@ final class MassivePostsViewController: UIViewController, UITableViewDataSource,
         cell.detailTextLabel?.text = p.body
         return cell
     }
+
 }
