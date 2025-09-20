@@ -27,13 +27,19 @@ public struct JPPost: Codable {
     }
 }
 
-final class MassivePostsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class MassivePostsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITableViewDataSourcePrefetching {
     private let tableView = UITableView(frame: .zero, style: .plain)
     private var posts: [Kata1Post] = []
     private var isLoading = false
     private let viewModel: Kata1ViewModelProtocol
     private var cancellable: AnyCancellable?
-
+    private let footerSpinner: UIActivityIndicatorView = {
+        let v = UIActivityIndicatorView(style: .medium)
+        v.hidesWhenStopped = true
+        v.frame = .init(x: 0, y: 0, width: .zero, height: 44)
+        return v
+    }()
+    private let prefetchBuffer = 10
 
 
     override func viewDidLoad() {
@@ -41,19 +47,33 @@ final class MassivePostsViewController: UIViewController, UITableViewDataSource,
         title = "Posts"
         view.backgroundColor = .systemBackground
         tableView.frame = view.bounds
+        tableView.tableFooterView = footerSpinner
         tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.prefetchDataSource = self
         view.addSubview(tableView)
-        handleState()
-        viewModel.viewDidLoad()
+        bind(viewModel: viewModel)
     }
 
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        cancellable?.cancel()
         cancellable = nil
     }
 
-    private func handleState() {
+
+    private func bind(viewModel: Kata1ViewModelProtocol) {
+        cancellable = viewModel.driver
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveValue: {
+                    [ weak self ]
+                    in self?.handleState(state: $0)
+                })
+    }
+
+    private func handleState(state: Kata1ViewModelState) {
         cancellable = viewModel.driver
             .receive(on: RunLoop.main)
             .sink { [weak self] state in
@@ -61,7 +81,7 @@ final class MassivePostsViewController: UIViewController, UITableViewDataSource,
                 case .loading:
                 print("Loading...")
             case .success(let posts):
-                self?.posts = posts
+                self?.posts += posts
                 self?.tableView.reloadData()
             case .failure(let error):
                 // Show error view
@@ -95,4 +115,25 @@ final class MassivePostsViewController: UIViewController, UITableViewDataSource,
         return cell
     }
 
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        let triggerRow = max(0, posts.count - prefetchBuffer)
+        let shouldLoad = indexPaths.contains { $0.section == 0 && $0.row >= triggerRow }
+
+//        if shouldLoad {
+//            Task {
+//                try await viewModel.getPosts()
+//            }
+//        }
+    }
+
+    func tableView(_ tableView: UITableView,
+                   willDisplay cell: UITableViewCell,
+                   forRowAt indexPath: IndexPath) {
+        let lastRow = max(0, posts.count - 1)
+        if indexPath.section == 0, indexPath.row == lastRow {
+            Task {
+                try await viewModel.getPosts()
+            }
+        }
+    }
 }

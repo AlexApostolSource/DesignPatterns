@@ -15,37 +15,34 @@ enum Kata1ViewModelState {
 }
 
 protocol Kata1ViewModelProtocol {
-    func viewDidLoad()
     func getPosts() async throws
-    var driver: AnyPublisher<Kata1ViewModelState, Never> { get }
+    var driver: Published<Kata1ViewModelState>.Publisher{ get }
 }
 
-import Combine
-
 @MainActor
-final class Kata1ViewModel: Kata1ViewModelProtocol {
+final class Kata1ViewModel: Kata1ViewModelProtocol, ObservableObject {
+
     private let facade: PostsServiceFacadeProtocol
     private let pageSize = 20
     private var currentPage = 1
-
-    private let subject = CurrentValueSubject<Kata1ViewModelState, Never>(.void)
-    var driver: AnyPublisher<Kata1ViewModelState, Never> { subject.eraseToAnyPublisher() }
+    
+    @Published private var state: Kata1ViewModelState = .void
+    var driver: Published<Kata1ViewModelState>.Publisher { $state }
 
     init(facade: PostsServiceFacadeProtocol) {
         self.facade = facade
     }
 
-    func viewDidLoad() { subject.send(.void) }
-
     func getPosts() async throws {
-        subject.send(.loading)
+        if case .loading = state { return }
+        state = .loading
         let result = await facade.fetch(page: currentPage)
         switch result {
         case .success(let posts):
-            subject.send(.success(posts))
+            state = .success(posts)
             currentPage += 1
         case .failure(let error):
-            subject.send(.failure(error))
+            state = .failure(error)
         }
     }
 }
