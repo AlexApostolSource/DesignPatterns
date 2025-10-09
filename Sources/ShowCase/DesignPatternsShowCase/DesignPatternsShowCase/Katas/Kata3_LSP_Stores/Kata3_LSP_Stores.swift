@@ -22,7 +22,7 @@ struct BookStoreEndpoint: NetworkLayerEndpoint {
             URLQueryItem(name: "q", value: query)
         ]
     }
-    var path: String = "search.json"
+    var path: String = "/search.json"
     var method: NetworkLayer.URLRequestMethod = .GET
 
     init(query: String) {
@@ -60,13 +60,3 @@ struct Book: Codable {
     let cover_i: Int?
 }
 
-
-final class BookStoreRepositoryFactory {
-	func make() -> BookStoreRepository {
-		let remoteDataSource = BookStoreRemoteDataSource(requestProvider: RequestProvider.basic)
-		let localDataSource = BookStoreLocalDataSource(fileManger: FileManager.default)
-		let cachedBookStoreProxy = CachedBookStoreProxy(remoteDataSource: remoteDataSource, localDataSource: localDataSource)
-		let repo = BookStoreRepository(store: cachedBookStoreProxy)
-		return repo
-	}
-}

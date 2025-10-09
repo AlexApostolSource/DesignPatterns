@@ -11,6 +11,7 @@ import SwiftUI
 class ViewController: UITableViewController {
     private let katas: [UIViewController] = [
         Kata1FactoryMethod.createKata1(),
+		BookStoreRepositoryFactory.make(),
         UIHostingController(rootView: PokemonListBadView()),
         UIHostingController(rootView: WeatherBadView()),
         UIHostingController(rootView: SpaceXBadView())

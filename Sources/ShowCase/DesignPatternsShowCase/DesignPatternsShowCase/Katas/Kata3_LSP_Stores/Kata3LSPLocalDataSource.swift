@@ -75,7 +75,7 @@ actor BookStoreLocalDataSource: BookStoreLocalDataSourceProtocol {
 			schemaVersion: schema,
 		)
 		memoryCache[query] = cacheEntry
-
+		try validateFolder()
 		guard let url = fileURL(forQuery: query) else {
 			throw BookStoreError.cannotCreateEntryURL
 		}
