@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CB6BEB0B2E735070008600EA /* DesignPatterns in Frameworks */ = {isa = PBXBuildFile; productRef = CB6BEB0A2E735070008600EA /* DesignPatterns */; };
+		CBE1FCA12E97BCE00081A0A0 /* Debouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE1FCA02E97BCE00081A0A0 /* Debouncer.swift */; };
 		CBE2D9682E74798D00915EB3 /* NetworkLayer in Frameworks */ = {isa = PBXBuildFile; productRef = CBE2D9672E74798D00915EB3 /* NetworkLayer */; };
 /* End PBXBuildFile section */
 
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		CB6BEAA92E734F84008600EA /* DesignPatternsShowCase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DesignPatternsShowCase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB6BEABF2E734F87008600EA /* DesignPatternsShowCaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DesignPatternsShowCaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBE1FCA02E97BCE00081A0A0 /* Debouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debouncer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -80,6 +82,7 @@
 		CB6BEAA02E734F84008600EA = {
 			isa = PBXGroup;
 			children = (
+				CBE1FCA02E97BCE00081A0A0 /* Debouncer.swift */,
 				CB6BEAAB2E734F84008600EA /* DesignPatternsShowCase */,
 				CB6BEAC22E734F87008600EA /* DesignPatternsShowCaseTests */,
 				CB6BEACC2E734F87008600EA /* DesignPatternsShowCaseUITests */,
@@ -211,6 +214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBE1FCA12E97BCE00081A0A0 /* Debouncer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

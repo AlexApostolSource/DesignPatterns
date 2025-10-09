@@ -8,10 +8,11 @@
 import UIKit
 import Combine
 
-final class Kata3LSPViewController: UITableViewController {
+final class Kata3LSPViewController: UITableViewController, UISearchResultsUpdating {
 	private var cancellable: AnyCancellable?
 	private let viewModel: Kata3LSPViewModelProtocol
 	private var dataSource: [Book] = []
+	private let searchController = UISearchController(searchResultsController: nil)
 
 	init(viewModel: Kata3LSPViewModelProtocol) {
 		self.viewModel = viewModel
@@ -23,8 +24,23 @@ final class Kata3LSPViewController: UITableViewController {
 		tableView.dataSource = self
 		tableView.delegate = self
 		tableView.register(BookCell.self, forCellReuseIdentifier: BookCell.reuseID)
+		searchController.searchResultsUpdater = self
+		searchController.obscuresBackgroundDuringPresentation = false
+		searchController.searchBar.placeholder = "Buscar producto"
+		navigationItem.searchController = searchController
+		navigationItem.hidesSearchBarWhenScrolling = false
+		definesPresentationContext = true
 		bind(to: viewModel)
 	}
+
+	func updateSearchResults(for searchController: UISearchController) {
+		let text = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+		Task {
+			try await viewModel.loadBooks(query: text)
+		}
+	}
+
 
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
@@ -44,9 +60,7 @@ final class Kata3LSPViewController: UITableViewController {
 	private func handleState(state: Kata3LSPViewModelState) {
 		switch state {
 			case .void:
-				Task {
-					try await viewModel.loadBooks(query: "Harry Potter")
-				}
+					break
 			case .loading:
 				break
 			case .loaded(let array):
