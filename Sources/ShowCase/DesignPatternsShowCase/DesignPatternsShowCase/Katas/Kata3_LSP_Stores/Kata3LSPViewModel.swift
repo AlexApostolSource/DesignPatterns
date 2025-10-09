@@ -43,7 +43,7 @@ final class Kata3LSPViewModel: ObservableObject, Kata3LSPViewModelProtocol {
 		/// Llama a esto en cada cambio de texto. El propio VM aplica debounce.
 	func loadBooks(query: String) async {
 		guard !query.isEmpty else { return }
-		await debouncer.debounce {@MainActor [weak self] in
+		await debouncer.debounce { @MainActor [weak self] in
 			guard let self else { return }
 			self.state = .loading
 			do {

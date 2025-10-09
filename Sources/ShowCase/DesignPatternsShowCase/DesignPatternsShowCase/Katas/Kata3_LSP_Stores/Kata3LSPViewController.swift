@@ -26,7 +26,7 @@ final class Kata3LSPViewController: UITableViewController, UISearchResultsUpdati
 		tableView.register(BookCell.self, forCellReuseIdentifier: BookCell.reuseID)
 		searchController.searchResultsUpdater = self
 		searchController.obscuresBackgroundDuringPresentation = false
-		searchController.searchBar.placeholder = "Buscar producto"
+		searchController.searchBar.placeholder = "Search Book"
 		navigationItem.searchController = searchController
 		navigationItem.hidesSearchBarWhenScrolling = false
 		definesPresentationContext = true
