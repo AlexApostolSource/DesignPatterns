@@ -24,6 +24,7 @@ struct BookStoreEndpoint: NetworkLayerEndpoint {
     }
     var path: String = "/search.json"
     var method: NetworkLayer.URLRequestMethod = .GET
+	var host: String = "openlibrary.org"
 
     init(query: String) {
         self.query = query

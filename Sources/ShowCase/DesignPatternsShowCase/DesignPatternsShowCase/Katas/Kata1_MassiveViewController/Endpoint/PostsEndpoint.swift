@@ -13,5 +13,7 @@ public struct PostsEndpoint: NetworkLayerEndpoint {
 
     public var path: String = "/posts"
 
+	public var host: String = "jsonplaceholder.typicode.com"
+
     public var method: NetworkLayer.URLRequestMethod  = .GET
 }
