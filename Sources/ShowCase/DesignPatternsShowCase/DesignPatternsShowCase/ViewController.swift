@@ -8,40 +8,72 @@
 import UIKit
 import SwiftUI
 
-class ViewController: UITableViewController {
-    private let katas: [UIViewController] = [
-        Kata1FactoryMethod.createKata1(),
-		BookStoreRepositoryFactory.make(),
-        UIHostingController(rootView: PokemonListBadView()),
-        UIHostingController(rootView: WeatherBadView()),
-        UIHostingController(rootView: SpaceXBadView())
-    ]
+/// Representable que permite integrar cualquier UIViewController en SwiftUI.
+struct UIKitViewControllerAdapter: UIViewControllerRepresentable {
+	let viewControllerFactory: () -> UIViewController
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "Design Patterns Showcase"
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-    }
+	func makeUIViewController(context: Context) -> UIViewController {
+		return viewControllerFactory()
+	}
 
-    // MARK: - Table view data source
+	func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return katas.count
-    }
+enum KataType: String, CaseIterable, Identifiable {
+	case kata1 = "Kata 1: Factory Method"
+	case bookStore = "BookStore Repository"
+	case pokemon = "Pokémon List (SwiftUI)"
+	case weather = "Weather App"
+	case spaceX = "SpaceX Launches"
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let viewController = katas[indexPath.row]
-        cell.textLabel?.text = String(describing: type(of: viewController))
-        cell.accessoryType = .disclosureIndicator
-        return cell
-    }
+	var id: String { self.rawValue }
 
-    // MARK: - Table view delegate
+	// Generamos la vista de destino para cada caso
+	@ViewBuilder
+	var destination: some View {
+		switch self {
+		case .kata1:
+			UIKitViewControllerAdapter { Kata1FactoryMethod.createKata1() }
+		case .bookStore:
+			UIKitViewControllerAdapter { BookStoreRepositoryFactory.make() }
+		case .pokemon:
+			PokemonListBadView()
+		case .weather:
+			WeatherBadView()
+		case .spaceX:
+			SpaceXBadView()
+		}
+	}
+}
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let selectedViewController = katas[indexPath.row]
-        navigationController?.pushViewController(selectedViewController, animated: true)
-    }
+struct DesignPatternsShowCaseView: View {
+	var body: some View {
+		NavigationStack {
+			List(KataType.allCases) { kata in
+				NavigationLink(value: kata) {
+					HStack(spacing: 16) {
+						Image(systemName: "terminal.fill")
+							.foregroundColor(.blue)
+							.frame(width: 30)
+
+						VStack(alignment: .leading, spacing: 4) {
+							Text(kata.rawValue)
+								.font(.headline)
+								.foregroundColor(.primary)
+							Text("Click para ejecutar la Kata")
+								.font(.caption)
+								.foregroundColor(.secondary)
+						}
+					}
+					.padding(.vertical, 4)
+				}
+			}
+			.navigationTitle("Design Patterns")
+			.navigationDestination(for: KataType.self) { kata in
+				kata.destination
+					.navigationTitle(kata.rawValue)
+					.navigationBarTitleDisplayMode(.inline)
+			}
+		}
+	}
 }

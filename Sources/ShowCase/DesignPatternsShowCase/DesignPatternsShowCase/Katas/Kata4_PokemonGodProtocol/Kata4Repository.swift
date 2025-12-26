@@ -7,7 +7,7 @@
 
 protocol Kata4RepositoryProtocol {
 	func fetchPokemonsList(limit: Int, offset: Int) async throws -> [PokemonDomain]
-	func fetchDetail(nameOrId: String) async throws -> PokemonDomain
+	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
 }
 
 struct Kata4Repository: Kata4RepositoryProtocol {
@@ -30,7 +30,13 @@ struct Kata4Repository: Kata4RepositoryProtocol {
 		}
 	}
 
-	func fetchDetail(nameOrId: String) async throws -> PokemonDomain {
-		fatalError("TODO implement")
+	func fetchDetail(nameOrId: String) async throws -> PokemonDetail {
+		if let cachedData = localDataSource.getDetail(nameOrId: nameOrId) {
+			return cachedData
+		} else {
+			let result = try await remoteDataSource.fetchDetail(nameOrId: nameOrId)
+			localDataSource.saveDetail(nameOrId: nameOrId, detail: result)
+			return result
+		}
 	}
 }

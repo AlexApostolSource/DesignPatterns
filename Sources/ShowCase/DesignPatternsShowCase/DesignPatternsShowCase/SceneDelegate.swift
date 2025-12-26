@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -17,8 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let navigationController =  UINavigationController()
         window = UIWindow(windowScene: windowScene)
-        let mainViewController = ViewController()
-
+        let mainViewController = UIHostingController(rootView: DesignPatternsShowCaseView())
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
 

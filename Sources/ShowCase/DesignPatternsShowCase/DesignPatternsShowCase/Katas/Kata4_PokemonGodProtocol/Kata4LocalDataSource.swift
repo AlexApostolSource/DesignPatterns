@@ -9,8 +9,9 @@ import Foundation
 protocol Kata4LocalDataSourceProtocol {
 	func fetchList(limit: Int, offset: Int) -> [PokemonDomain]?
 	func saveList(_ list: [PokemonDomain])
-	func saveDetail(nameOrId: String, detail: Data)
+	func saveDetail(nameOrId: String, detail: PokemonDetail)
 	func clearCache()
+	func getDetail(nameOrId: String) -> PokemonDetail?
 }
 
 final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
@@ -28,8 +29,8 @@ final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 			_listData = newValue
 		}
 	}
-	private var _listDetail: [String: Data] = [:]
-	private var listDetail: [String: Data] {
+	private var _listDetail: [String: PokemonDetail] = [:]
+	private var listDetail: [String: PokemonDetail] {
 		get {
 			lock.lock()
 			defer { lock.unlock() }
@@ -43,23 +44,13 @@ final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 	}
 
 	func fetchList(limit: Int, offset: Int) -> [PokemonDomain]? {
-		guard offset < listData.count else {
-			return nil
-		}
-		let index = listData.index(listData.startIndex, offsetBy: offset)
-		if index.advanced(by: limit) > listData.count {
-			return listData
-		}
-		return nil
+		guard offset < listData.count else { return nil }
+
+		let start = offset
+		let end = min(offset + limit, listData.count)
+		return Array(listData[start..<end])
 	}
 
-	func fetchDetail(nameOrId: String, completion: @escaping (Data?) -> Void) {
-		if let data = listDetail[nameOrId] {
-			completion(data)
-			return
-		}
-		completion(nil)
-	}
 
 	func clearCache() {
 		listData.removeAll()
@@ -70,12 +61,13 @@ final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 		listData += list
 	}
 
-	func saveDetail(nameOrId: String, detail: Data) {
+	func saveDetail(nameOrId: String, detail: PokemonDetail) {
 		listDetail[nameOrId] = detail
 	}
 
-	
-
+	func getDetail(nameOrId: String) -> PokemonDetail? {
+		listDetail[nameOrId]
+	}
 }
 
 struct PokemonData {

@@ -9,7 +9,7 @@ import NetworkLayer
 
 protocol Kata4RemoteDataSourceProtocol {
 	func fetchPokemonsList(limit: Int, offset: Int) async throws -> PokemonsResponse
-	func fetchDetail(nameOrId: String) async throws -> RemotePokemon
+	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
 }
 
 struct Kata4RemoteDataSource: Kata4RemoteDataSourceProtocol {
@@ -26,9 +26,9 @@ struct Kata4RemoteDataSource: Kata4RemoteDataSourceProtocol {
 		return result
 	}
 
-	func fetchDetail(nameOrId: String) async throws -> RemotePokemon {
+	func fetchDetail(nameOrId: String) async throws -> PokemonDetail {
 		let endpoint = Kata4PokemonDetailEndpoint(nameOrId: nameOrId)
-		let result: RemotePokemon = try await requestProvider.execute(endpoint: endpoint)
+		let result: PokemonDetail = try await requestProvider.execute(endpoint: endpoint)
 		return result
 	}
 }
@@ -42,10 +42,9 @@ struct Kata4PokemonDetailEndpoint: NetworkLayerEndpoint {
 	}
 
 	var path: String  {
-		"v2/pokemon/\(nameOrId)"
+		"/api/v2/pokemon/\(nameOrId)"
 	}
 
-	var host: String = "https://pokeapi.co/api"
 
 	var method: NetworkLayer.URLRequestMethod = .GET
 
@@ -59,9 +58,7 @@ struct Kata4EPokemonListEndpoint: NetworkLayerEndpoint {
 		]
 	}
 
-	var path: String = "v2/pokemon"
-
-	var host: String = "https://pokeapi.co/api"
+	var path: String = "/api/v2/pokemon"
 
 	var method: NetworkLayer.URLRequestMethod = .GET
 
@@ -94,7 +91,49 @@ struct PokemonResponseMapper {
 	}
 }
 
-struct PokemonDomain {
+struct PokemonDomain: Identifiable {
+	let id: String = UUID().uuidString
 	let name: String
 	let url: String
+}
+
+
+struct PokemonDetail: Decodable, Hashable {
+	let id: Int
+	let name: String
+	private let sprites: SpriteContainer // Privado para forzar el uso de la propiedad limpia
+
+	// Propiedad de conveniencia: Aplana la jerarquía para la Vista
+	var officialArtworkURL: URL? {
+		URL(string: sprites.other.officialArtwork.frontDefault)
+	}
+
+	// Estructuras internas necesarias para la decodificación
+	struct SpriteContainer: Decodable {
+		let other: OtherSprites
+	}
+
+	struct OtherSprites: Decodable {
+		let officialArtwork: Artwork
+
+		enum CodingKeys: String, CodingKey {
+			case officialArtwork = "official-artwork" // Manejo del guion en el JSON
+		}
+	}
+
+	struct Artwork: Decodable {
+		let frontDefault: String
+
+		enum CodingKeys: String, CodingKey {
+			case frontDefault = "front_default"
+		}
+	}
+
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(id)
+	}
+
+	static func == (lhs: PokemonDetail, rhs: PokemonDetail) -> Bool {
+		lhs.id == rhs.id
+	}
 }
