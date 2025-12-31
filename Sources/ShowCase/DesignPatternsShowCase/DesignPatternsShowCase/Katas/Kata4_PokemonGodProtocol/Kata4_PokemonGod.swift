@@ -30,18 +30,31 @@ struct PokemonListBadView: View {
 
 				}
 			}
-				.onAppear {
-	//                manager.fetchList(limit: 50, offset: 0) { results in
-	//					viewModel.pokemons = results.map(\.name)
-	//                    // Pide detalles desde la vista (mal)
-	//                    if let first = self.items.first {
-	//                        manager.fetchDetail(nameOrId: first) { _ in print("Detail fetched") }
-	//                    }
-	//                }
-				}.task {
+			.onScrollGeometryChange(for: Bool.self, of: { geometry in
+				let contentHeight = geometry.contentSize.height
+				let visibleHeight = geometry.containerSize.height
+				let scrollOffset = geometry.contentOffset.y
+
+				// 2. Definimos el "umbral" (ej. 300 puntos antes del final)
+				// Esto equivale visualmente a unas 4-5 celdas
+				let distanceToBottom = contentHeight - visibleHeight - scrollOffset
+
+				// 3. Devolvemos true si estamos cerca del final
+				return distanceToBottom < 500
+			}, action: { wasNearBottom, isNearBottom in
+				if isNearBottom && !wasNearBottom {
+					Task {
+						await viewModel.loadMore()
+					}
+				}
+			}).task {
 					await viewModel.getPokemons(limit: 50, offset: 0)
 				}.navigationDestination(item: $viewModel.pokemonDetail, destination: { detail in
 					PokemonDetailView(detail: detail)
+				}).overlay(content: {
+					if viewModel.isLoading {
+						ProgressView()
+					}
 				})
 				.navigationTitle("Pokémon")
 

@@ -12,6 +12,7 @@ protocol Kata4LocalDataSourceProtocol {
 	func saveDetail(nameOrId: String, detail: PokemonDetail)
 	func clearCache()
 	func getDetail(nameOrId: String) -> PokemonDetail?
+	func currentCacheSize() -> Int
 }
 
 final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
@@ -67,6 +68,10 @@ final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 
 	func getDetail(nameOrId: String) -> PokemonDetail? {
 		listDetail[nameOrId]
+	}
+
+	func currentCacheSize() -> Int {
+		return listDetail.count
 	}
 }
 

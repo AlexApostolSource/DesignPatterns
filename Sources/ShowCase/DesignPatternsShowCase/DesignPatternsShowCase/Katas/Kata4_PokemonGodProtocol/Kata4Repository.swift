@@ -8,6 +8,8 @@
 protocol Kata4RepositoryProtocol {
 	func fetchPokemonsList(limit: Int, offset: Int) async throws -> [PokemonDomain]
 	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
+	func clearCache()
+	func cacheSize() -> Int
 }
 
 struct Kata4Repository: Kata4RepositoryProtocol {
@@ -38,5 +40,13 @@ struct Kata4Repository: Kata4RepositoryProtocol {
 			localDataSource.saveDetail(nameOrId: nameOrId, detail: result)
 			return result
 		}
+	}
+
+	func clearCache() {
+		localDataSource.clearCache()
+	}
+
+	func cacheSize() -> Int {
+		localDataSource.currentCacheSize()
 	}
 }
