@@ -6,12 +6,14 @@ protocol PokemonDataImplementor {
 	func fetchList(limit: Int, offset: Int) async throws -> [PokemonDomain]
 	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
 	func clearCache()
+	func fetchImage(nameOrId: String) async throws -> Data
 }
 
 
 @Observable
 final class PokemonBrowserViewModel {
 	private let dataProvider: PokemonDataImplementor
+
 	private(set) var pokemons: [PokemonDomain] = []
 	var pokemonDetail: PokemonDetail?
 	let logger: Kata4LoggerUseCaseProtocol
@@ -48,11 +50,19 @@ final class PokemonBrowserViewModel {
 		}
 	}
 
-	init(dataProvider: PokemonDataImplementor, logger: Kata4LoggerUseCaseProtocol = Kata4LoggerUseCase()) {
+	init(
+		dataProvider: PokemonDataImplementor,
+		logger: Kata4LoggerUseCaseProtocol = Kata4LoggerUseCase(),
+	) {
 		self.dataProvider = dataProvider
 		self.logger = logger
 
 	}
+
+	func getURl(for pokemon: PokemonDomain) -> URL? {
+		PokemonDomainURLIDSanatizer.sanitize(pokemon.url)
+	}
+
 
 	func getPokemons(limit: Int, offset: Int) async {
 		isLoading = true
@@ -109,6 +119,11 @@ struct CacheFirstDataImplementor: PokemonDataImplementor {
 	func clearCache() {
 		repo.clearCache()
 	}
+
+	func fetchImage(nameOrId: String) async throws -> Data {
+		// not implemented
+		Data()
+	}
 }
 
 
@@ -134,5 +149,9 @@ struct RemoteOnlyDataImplementor: PokemonDataImplementor {
 
 	func clearCache() {
 		// no op
+	}
+
+	func fetchImage(nameOrId: String) async throws -> Data {
+		try await remoteDataSource.fetchImage(nameOrId: nameOrId)
 	}
 }

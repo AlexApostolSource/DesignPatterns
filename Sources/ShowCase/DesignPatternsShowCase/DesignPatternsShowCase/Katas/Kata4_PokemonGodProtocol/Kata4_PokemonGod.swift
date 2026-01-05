@@ -26,8 +26,14 @@ struct PokemonListBadView: View {
 						await viewModel.detail(nameOrId: pokemon.name)
 					}
 				} label: {
-					Text(pokemon.name)
+					HStack {
+						VStack {
+							Kata4Factory.makeViewSpriteView(pokemonID: pokemon.urlID ?? "")
+						}
+						.frame(width: 60, height: 60)
 
+						Text(pokemon.name)
+					}
 				}
 			}
 			.onScrollGeometryChange(for: Bool.self, of: { geometry in
@@ -94,5 +100,13 @@ struct Kata4Factory {
 		let repo = Kata4Repository(remoteDataSource: remoteDataSource, localDataSource: localDataSource)
 		let dataProvider = CacheFirstDataImplementor(repo: repo)
 		return PokemonBrowserViewModel(dataProvider: dataProvider)
+	}
+
+	static func makeViewSpriteView(pokemonID: String) -> Kata4PokemonSpriteImageView {
+		let requestProvider: RequestProviderProtocol = RequestProvider.basic
+		let remoteDataSource = Kata4RemoteDataSource(requestProvider: requestProvider)
+		let dataProvider = RemoteOnlyDataImplementor(remoteDataSource: remoteDataSource)
+		let vm = Kata4PokemonImageViewViewModel(dataProvider: dataProvider)
+		return Kata4PokemonSpriteImageView(viewModel: vm, id: pokemonID)
 	}
 }

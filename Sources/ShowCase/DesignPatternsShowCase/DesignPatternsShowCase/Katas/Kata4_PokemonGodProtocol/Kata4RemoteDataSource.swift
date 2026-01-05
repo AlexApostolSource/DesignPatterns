@@ -10,6 +10,7 @@ import NetworkLayer
 protocol Kata4RemoteDataSourceProtocol {
 	func fetchPokemonsList(limit: Int, offset: Int) async throws -> PokemonsResponse
 	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
+	func fetchImage(nameOrId: String) async throws -> Data
 }
 
 struct Kata4RemoteDataSource: Kata4RemoteDataSourceProtocol {
@@ -29,6 +30,12 @@ struct Kata4RemoteDataSource: Kata4RemoteDataSourceProtocol {
 	func fetchDetail(nameOrId: String) async throws -> PokemonDetail {
 		let endpoint = Kata4PokemonDetailEndpoint(nameOrId: nameOrId)
 		let result: PokemonDetail = try await requestProvider.execute(endpoint: endpoint)
+		return result
+	}
+
+	func fetchImage(nameOrId: String) async throws -> Data {
+		let endpoint = Kata4PokemonImageEndpoint(id: nameOrId)
+		let result: Data = try await requestProvider.execute(endpoint: endpoint)
 		return result
 	}
 }
@@ -95,7 +102,22 @@ struct PokemonDomain: Identifiable {
 	let id: String = UUID().uuidString
 	let name: String
 	let url: String
+	var urlID: String? {
+		let idString = url.split(separator: "/").last
+		return idString?.lowercased()
+	}
 }
+
+struct PokemonDomainURLIDSanatizer {
+	static func sanitize(_ url: String) -> URL? {
+		guard let idString = url.split(separator: "/").last,
+			  let idInt = Int(idString) else {
+			return URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(0).png")
+		}
+		return URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(idInt).png")
+	}
+}
+
 
 
 struct PokemonDetail: Decodable, Hashable {
