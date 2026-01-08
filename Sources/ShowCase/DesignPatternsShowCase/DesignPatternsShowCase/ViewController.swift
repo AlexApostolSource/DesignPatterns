@@ -39,7 +39,7 @@ enum KataType: String, CaseIterable, Identifiable {
 		case .pokemon:
 			PokemonListBadView()
 		case .weather:
-			WeatherBadView()
+			Kata5Factory.makeView()
 		case .spaceX:
 			SpaceXBadView()
 		}
