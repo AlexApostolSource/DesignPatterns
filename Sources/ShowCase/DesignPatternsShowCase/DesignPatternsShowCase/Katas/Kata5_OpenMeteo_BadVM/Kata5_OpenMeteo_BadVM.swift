@@ -27,13 +27,38 @@ struct WeatherBadView: View {
     }()
 
     var body: some View {
-        VStack {
-            Text(vm.status)
-            List(vm.points) { p in
-                let timeText = Self.timeFormatter.string(from: p.date)
-                Text("\(timeText)  \(p.temperature)ºC")
-            }
-        }
-        .onAppear { vm.load(lat: 40.4168, lon: -3.7038) }
-    }
+		VStack {
+			switch vm.currentState {
+			case .void:
+				ProgressView()
+			case .loading:
+				ProgressView()
+			case .loaded(let points):
+				Text(vm.currentState.status)
+				List(points) { p in
+					let timeText = Self.timeFormatter.string(from: p.date)
+					Text("\(timeText)  \(p.temperature)ºC")
+				}
+			case .error:
+				// Native SwiftUI error handling UI component
+				ContentUnavailableView(
+					"Network Error",
+					systemImage: "exclamationmark.triangle",
+					description: Text("CannotLoadData")
+				)
+				Button("Retry") {
+					// Task allows bridging synchronous button action to async context
+					Task {
+						await vm.load(lat: 40.4168, lon: -3.7038)
+					}
+
+				}
+				.buttonStyle(.borderedProminent)
+			}
+		}.task {
+			if case .void = vm.currentState {
+				await vm.load(lat: 40.4168, lon: -3.7038)
+			}
+		}
+	}
 }

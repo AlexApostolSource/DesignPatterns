@@ -11,38 +11,78 @@ import SwiftUI
 @Observable
 final class WeatherViewModelBad {
 	var points: [WeatherResponse.WeatherPoint] = []
-	var status: String = "idle"
 	private let getWetherUseCase: GetWetherUseCaseProtocol
+	enum State: Equatable {
+		static func == (lhs: WeatherViewModelBad.State, rhs: WeatherViewModelBad.State) -> Bool {
+			switch (lhs, rhs) {
+
+			case (.void, .void): return true
+
+			case (.loading, .loading): return true
+
+			case (.loaded, .loaded): return true
+
+			case (.error, .error): return true
+
+			default: return false
+
+			}
+		}
+
+		case void
+		case loading
+		case loaded(points: [WeatherResponse.WeatherPoint])
+		case error
+
+		var status: String {
+			switch self {
+			case .void:
+				return "idle"
+			case .loading:
+				return "loading"
+			case .loaded:
+				return "loaded"
+			case .error:
+				return "error"
+			}
+		}
+	}
+
+	var currentState: State = .void
+	private var currentLoadingTask: Task<WeatherResponse, Error>?
 
 	init(getWetherUseCase: GetWetherUseCaseProtocol) {
 		self.getWetherUseCase = getWetherUseCase
 	}
 
-	func newGo(lat: Double, lon: Double) {
+	func newGo(lat: Double, lon: Double) async {
 		let tz = TimeZone.current.identifier
-		Task {
-			do {
-				let result = try await getWetherUseCase.getWether(params: GetWetherParams(timeZone: tz, lat: lat, lon: lon))
-				self.points = result.getFormattedHourlyData()
-				self.status = "loaded at \(Date())" // usa Date() directo (mal)
-			} catch {
-				print(error)
-			}
+		guard currentState != .loading else { return }
+		self.currentState = .loading
+		currentLoadingTask = Task {
+			let result = try await getWetherUseCase.getWether(params: GetWetherParams(timeZone: tz, lat: lat, lon: lon))
+			return result
+		}
 
+		do {
+			let result = try await currentLoadingTask?.value
+			self.currentState = .loaded(points: result?.getFormattedHourlyData() ?? [])
+		} catch {
+			self.currentState = .error
+			print(error)
 		}
 	}
 
-	func load(lat: Double, lon: Double) {
-		status = "loading"
+	func load(lat: Double, lon: Double) async {
 		// URL montada a mano (mal) + zona horaria del sistema (no inyectable)
 
 
 		// Retries manuales con sleep en main thread (mal)
 		var attempts = 0
-		newGo(lat: lat, lon: lon)
-		let tz = TimeZone.current.identifier
-		let urlStr = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)&hourly=temperature_2m&timezone=\(tz)"
-		guard let url = URL(string: urlStr) else { status = "bad_url"; return }
+		await newGo(lat: lat, lon: lon)
+//		let tz = TimeZone.current.identifier
+//		let urlStr = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)&hourly=temperature_2m&timezone=\(tz)"
+//		guard let url = URL(string: urlStr) else { status = "bad_url"; return }
 
 		func go() {
 

@@ -3,14 +3,14 @@
 ## Qué debes corregir
 
 ### DIP (Inversión de dependencias)
-- Inyectar `HTTPClient`, `Clock`, `Logger` en el VM (nada de `URLSession`/`Date()` directos).
+- Inyectar `HTTPClient`, `Clock`, `Logger` en el VM (nada de `URLSession`/`Date()` directos). check!
 
 ### Construcción segura de URL
-- Usar un **Builder** para la query (valida lat/lon, hourly, zona horaria).
+- Usar un **Builder** para la query (valida lat/lon, hourly, zona horaria). check!
 
 ### Resiliencia
 - Reintentos **exponenciales** ante 5xx y cancelables (no bloquear main thread).  
-- Estados explícitos (`loading` / `success` / `error`) y errores tipados.
+- Estados explícitos (`loading` / `success` / `error`) y errores tipados. check!
 
 ### Determinismo temporal
 - Inyectar `TimeZone`/`Clock` para tests consistentes (ej. `Europe/Madrid`).
