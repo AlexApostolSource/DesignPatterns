@@ -35,9 +35,9 @@ struct WeatherBadView: View {
 				ProgressView()
 			case .loaded(let points):
 				Text(vm.currentState.status)
-				List(points) { p in
-					let timeText = Self.timeFormatter.string(from: p.date)
-					Text("\(timeText)  \(p.temperature)ºC")
+				List(points) { points in
+					let timeText = Self.timeFormatter.string(from: points.date)
+					Text("\(timeText)  \(points.temperature)ºC")
 				}
 			case .error:
 				// Native SwiftUI error handling UI component

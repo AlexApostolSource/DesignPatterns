@@ -13,7 +13,7 @@
 - Estados explícitos (`loading` / `success` / `error`) y errores tipados. check!
 
 ### Determinismo temporal
-- Inyectar `TimeZone`/`Clock` para tests consistentes (ej. `Europe/Madrid`).
+- Inyectar `TimeZone`/`Clock` para tests consistentes (ej. `Europe/Madrid`). check
 
 ---
 

@@ -37,7 +37,7 @@ final class WeatherViewModelBad {
 		var status: String {
 			switch self {
 			case .void:
-				return "idle"
+				return "void"
 			case .loading:
 				return "loading"
 			case .loaded:
@@ -48,19 +48,50 @@ final class WeatherViewModelBad {
 		}
 	}
 
-	var currentState: State = .void
-	private var currentLoadingTask: Task<WeatherResponse, Error>?
+	private var _currentState: State = .void
+	var currentState: State {
+		get {
+			logger.log(level: .info, message: "CurrentKata5 ViewModel state: \(_currentState.status)")
+			return _currentState
+		}
 
-	init(getWetherUseCase: GetWetherUseCaseProtocol) {
+		set {
+			_currentState = newValue
+		}
+	}
+	private let clockProvider: ClockProviderProtocol
+	private var currentLoadingTask: Task<WeatherResponse, Error>?
+	private let logger: KataLoggerProtocol
+
+	init(
+		getWetherUseCase: GetWetherUseCaseProtocol,
+		clockProvider: ClockProviderProtocol = ClockProvider(),
+		logger: KataLoggerProtocol = KataLogger(
+			subsystem: "kata4",
+			category: "kata4VM"
+		)
+	) {
 		self.getWetherUseCase = getWetherUseCase
+		self.clockProvider = clockProvider
+		self.logger = logger
+	}
+
+	func stringifiedStatus() -> String {
+		logger.log(level: .info, message: "CurrentStatus: \(currentState.status)")
+		return currentState.status
 	}
 
 	func newGo(lat: Double, lon: Double) async {
-		let tz = TimeZone.current.identifier
 		guard currentState != .loading else { return }
 		self.currentState = .loading
 		currentLoadingTask = Task {
-			let result = try await getWetherUseCase.getWether(params: GetWetherParams(timeZone: tz, lat: lat, lon: lon))
+			let result = try await getWetherUseCase.getWether(
+				params: GetWetherParams(
+					timeZone: clockProvider.timeZone,
+					lat: lat,
+					lon: lon
+				)
+			)
 			return result
 		}
 
@@ -69,7 +100,7 @@ final class WeatherViewModelBad {
 			self.currentState = .loaded(points: result?.getFormattedHourlyData() ?? [])
 		} catch {
 			self.currentState = .error
-			print(error)
+			logger.log(level: .error, message: error.localizedDescription)
 		}
 	}
 
