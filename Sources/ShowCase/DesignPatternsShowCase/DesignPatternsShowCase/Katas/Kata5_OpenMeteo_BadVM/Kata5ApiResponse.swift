@@ -54,34 +54,3 @@ struct HourlyData: Codable {
 		case temperature2m = "temperature_2m"
 	}
 }
-
-// MARK: - Domain Model Extension (Expert Suggestion)
-extension WeatherResponse {
-	/// A single data point representing one hour of weather.
-	/// Useful for SwiftUI Lists or Charts.
-	struct WeatherPoint: Identifiable {
-		let id = UUID()
-		let date: Date
-		let temperature: Double
-	}
-
-	/// Computes a list of standard objects from the parallel arrays.
-	/// - Returns: An array of WeatherPoint ready for UI consumption.
-	func getFormattedHourlyData() -> [WeatherPoint] {
-		var points: [WeatherPoint] = []
-
-		// Date Formatter for the specific input format "yyyy-MM-dd'T'HH:mm"
-		let formatter = DateFormatter()
-		formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
-		formatter.timeZone = TimeZone(identifier: self.timezone)
-
-		// Zip the two arrays to ensure we don't access out-of-bounds indices
-		for (timeString, temp) in zip(hourly.time, hourly.temperature2m) {
-			if let date = formatter.date(from: timeString) {
-				points.append(WeatherPoint(date: date, temperature: temp))
-			}
-		}
-
-		return points
-	}
-}

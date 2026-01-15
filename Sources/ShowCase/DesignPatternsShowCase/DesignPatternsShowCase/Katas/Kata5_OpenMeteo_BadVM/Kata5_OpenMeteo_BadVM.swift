@@ -21,8 +21,12 @@ struct WeatherBadView: View {
 
     private static let timeFormatter: DateFormatter = {
         let df = DateFormatter()
-        df.dateStyle = .none
-        df.timeStyle = .short
+        // Localizado y sensible a las preferencias del usuario
+        df.locale = .autoupdatingCurrent
+        df.calendar = .autoupdatingCurrent
+        df.timeZone = .autoupdatingCurrent
+        // Formato “chulo”: lun 8 ene 18:00 CET (se adapta al idioma/país)
+        df.setLocalizedDateFormatFromTemplate("EEE d MMM HH:mm z")
         return df
     }()
 
@@ -35,9 +39,14 @@ struct WeatherBadView: View {
 				ProgressView()
 			case .loaded(let points):
 				Text(vm.currentState.status).font(.title)
+				Text(vm.currentLocation).font(.title)
 				List(points) { points in
 					let timeText = Self.timeFormatter.string(from: points.date)
-					Text("\(timeText)  \(points.temperature)ºC")
+					HStack {
+						Text(timeText)
+						Text(points.temperature.asString())
+					}
+
 				}
 			case .error:
 				// Native SwiftUI error handling UI component

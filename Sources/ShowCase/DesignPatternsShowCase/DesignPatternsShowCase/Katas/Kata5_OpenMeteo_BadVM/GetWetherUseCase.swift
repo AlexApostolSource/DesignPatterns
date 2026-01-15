@@ -6,7 +6,7 @@
 //
 
 protocol GetWetherUseCaseProtocol {
-	func getWether(params: GetWetherParams) async throws -> WeatherResponse
+	func getWether(params: GetWetherParams) async throws -> WeatherForecast
 }
 
 struct GetWetherUseCase: GetWetherUseCaseProtocol {
@@ -16,7 +16,8 @@ struct GetWetherUseCase: GetWetherUseCaseProtocol {
 		self.remoteDataSource = remoteDataSource
 	}
 
-	func getWether(params: GetWetherParams) async throws -> WeatherResponse {
-		try await remoteDataSource.getWether(params: params)
+	func getWether(params: GetWetherParams) async throws -> WeatherForecast {
+		let result = try await remoteDataSource.getWether(params: params)
+		return result.toDomain()
 	}
 }

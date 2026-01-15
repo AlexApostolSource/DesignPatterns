@@ -13,15 +13,15 @@
 - Estados explícitos (`loading` / `success` / `error`) y errores tipados. check!
 
 ### Determinismo temporal
-- Inyectar `TimeZone`/`Clock` para tests consistentes (ej. `Europe/Madrid`). check check
+- Inyectar `TimeZone`/`Clock` para tests consistentes (ej. `Europe/Madrid`). check !
 
 ---
 
 ## Patrones a aplicar
 
 ### Obligatorios
-- **Abstract Factory**: crear dependencias del VM (prod/test).  
-- **Builder**: para la petición de pronóstico.  
+- **Abstract Factory**: crear dependencias del VM (prod/test).  check!
+- **Builder**: para la petición de pronóstico.  CHECK!
 - **Adapter**: para Open-Meteo (DTO → Dominio).
 
 ### Opcionales

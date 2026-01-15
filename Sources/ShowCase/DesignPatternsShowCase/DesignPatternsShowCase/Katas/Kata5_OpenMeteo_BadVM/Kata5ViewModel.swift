@@ -10,7 +10,7 @@ import SwiftUI
 
 @Observable
 final class WeatherViewModelBad {
-	var points: [WeatherResponse.WeatherPoint] = []
+	var points: [HourlyForecast] = []
 	private let getWetherUseCase: GetWetherUseCaseProtocol
 	enum State: Equatable {
 		static func == (lhs: WeatherViewModelBad.State, rhs: WeatherViewModelBad.State) -> Bool {
@@ -28,10 +28,9 @@ final class WeatherViewModelBad {
 
 			}
 		}
-
 		case void
 		case loading
-		case loaded(points: [WeatherResponse.WeatherPoint])
+		case loaded(points: [HourlyForecast])
 		case error
 
 		var status: String {
@@ -48,6 +47,8 @@ final class WeatherViewModelBad {
 		}
 	}
 
+	private let geolocationHelper: GeolocationHelperProtocol
+
 	private var _currentState: State = .void
 	var currentState: State {
 		get {
@@ -59,8 +60,9 @@ final class WeatherViewModelBad {
 			_currentState = newValue
 		}
 	}
+	var currentLocation: String = "unknown"
 	private let clockProvider: ClockProviderProtocol
-	private var currentLoadingTask: Task<WeatherResponse, Error>?
+	private var currentLoadingTask: Task<WeatherForecast, Error>?
 	private let logger: KataLoggerProtocol
 
 	init(
@@ -69,11 +71,13 @@ final class WeatherViewModelBad {
 		logger: KataLoggerProtocol = KataLogger(
 			subsystem: "kata4",
 			category: "kata4VM"
-		)
+		),
+		geolocationHelper: GeolocationHelperProtocol = GeocodingHelper()
 	) {
 		self.getWetherUseCase = getWetherUseCase
 		self.clockProvider = clockProvider
 		self.logger = logger
+		self.geolocationHelper = geolocationHelper
 	}
 
 	func stringifiedStatus() -> String {
@@ -97,7 +101,8 @@ final class WeatherViewModelBad {
 
 		do {
 			let result = try await currentLoadingTask?.value
-			self.currentState = .loaded(points: result?.getFormattedHourlyData() ?? [])
+			self.currentLocation = try await geolocationHelper.getLocationName(lat: lat, lon: lon)
+			self.currentState = .loaded(points: result?.hourly ?? [])
 		} catch {
 			self.currentState = .error
 			logger.log(level: .error, message: error.localizedDescription)
