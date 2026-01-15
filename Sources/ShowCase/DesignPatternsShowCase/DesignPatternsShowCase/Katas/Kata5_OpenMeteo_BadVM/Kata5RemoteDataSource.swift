@@ -41,31 +41,65 @@ struct WetherRemoteDataSource: WetherRemoteDataSourceProtocol {
 	}
 
 	func getWether(params: GetWetherParams) async throws -> WeatherResponse {
-		let endpoint = WetherEndpoint(params: params)
+		var builder = WetherEndpointBuilder().setLatitude(params.lat).setLongitude(params.lon).setTimeZone(params.timeZone)
+
+		let endpoint = try builder.build()
 		return try await requestProvider.execute(endpoint: endpoint)
 	}
 }
 
+struct WetherEndpointBuilder {
+	private var timeZone: String?
+	private var lat: Double?
+	private var lon: Double?
+
+	// Fluent Setters (Granulares -> Esto justifica el patrón Builder)
+	func setLatitude(_ lat: Double) -> WetherEndpointBuilder {
+		var copy = self
+		copy.lat = lat
+		return copy
+	}
+
+	func setLongitude(_ lon: Double) -> WetherEndpointBuilder {
+		var copy = self
+		copy.lon = lon
+		return copy
+	}
+
+	func setTimeZone(_ timeZone: String) -> WetherEndpointBuilder {
+		var copy = self
+		copy.timeZone = timeZone
+		return copy
+	}
+
+	func build() throws -> WetherEndpoint {
+			guard let lat, let lon, let timeZone else {
+				throw WetherEndpointError.noParamsProvided
+			}
+
+			let items = [
+				URLQueryItem(name: "latitude", value: "\(lat)"),
+				URLQueryItem(name: "longitude", value: "\(lon)"),
+				URLQueryItem(name: "hourly", value: "temperature_2m"),
+				URLQueryItem(name: "timeZone", value: timeZone)
+			]
+
+			return WetherEndpoint(queryItems: items)
+		}
+}
+
 
 struct WetherEndpoint: NetworkLayerEndpoint {
-	private let params: GetWetherParams
 
-	init(params: GetWetherParams) {
-		self.params = params
+	init(queryItems: [URLQueryItem]) {
+		self.queryItems = queryItems
 	}
 
 	var host: String {
 		"api.open-meteo.com"
 	}
 
-	var queryItems: [URLQueryItem] {
-		return [
-			URLQueryItem(name: "latitude", value: "\(params.lat)"),
-			URLQueryItem(name: "longitude", value: "\(params.lon)"),
-			URLQueryItem(name: "hourly", value: "temperature_2m"),
-			URLQueryItem(name: "timeZone", value: params.timeZone),
-		]
-	}
+	var queryItems: [URLQueryItem] = []
 
 	var path: String {
 		"/v1/forecast"
@@ -74,4 +108,8 @@ struct WetherEndpoint: NetworkLayerEndpoint {
 	var method: NetworkLayer.URLRequestMethod = .GET
 
 
+}
+
+enum WetherEndpointError: Error {
+	case noParamsProvided
 }

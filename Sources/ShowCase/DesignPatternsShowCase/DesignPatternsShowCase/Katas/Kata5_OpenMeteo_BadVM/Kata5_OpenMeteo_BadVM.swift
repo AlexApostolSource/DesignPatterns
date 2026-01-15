@@ -34,7 +34,7 @@ struct WeatherBadView: View {
 			case .loading:
 				ProgressView()
 			case .loaded(let points):
-				Text(vm.currentState.status)
+				Text(vm.currentState.status).font(.title)
 				List(points) { points in
 					let timeText = Self.timeFormatter.string(from: points.date)
 					Text("\(timeText)  \(points.temperature)ºC")
