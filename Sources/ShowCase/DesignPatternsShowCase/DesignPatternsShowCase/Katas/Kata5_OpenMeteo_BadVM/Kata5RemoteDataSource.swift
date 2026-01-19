@@ -8,7 +8,7 @@ import NetworkLayer
 import Foundation
 
 protocol WetherRemoteDataSourceProtocol {
-	func getWether(params: GetWetherParams) async throws -> WeatherResponse
+	func getWether(params: GetWetherParams) async throws -> WeatherForecast
 }
 
 struct GetWetherParams {
@@ -18,10 +18,11 @@ struct GetWetherParams {
 }
 
 struct Kata5Factory {
-	static func makeRemoteDataSource() -> WetherRemoteDataSource {
+	static func makeRemoteDataSource() -> WetherRemoteDataSourceProtocol {
 		let requestProvider = RequestProvider.basic
 		let dataSource = WetherRemoteDataSource(requestProvider: requestProvider)
-		return dataSource
+		let proxy = GetWetherProxy(remoteDataSource: dataSource)
+		return proxy
 	}
 
 	static func makeView() -> WeatherBadView {
@@ -40,11 +41,12 @@ struct WetherRemoteDataSource: WetherRemoteDataSourceProtocol {
 		self.requestProvider = requestProvider
 	}
 
-	func getWether(params: GetWetherParams) async throws -> WeatherResponse {
-		var builder = WetherEndpointBuilder().setLatitude(params.lat).setLongitude(params.lon).setTimeZone(params.timeZone)
+	func getWether(params: GetWetherParams) async throws -> WeatherForecast {
+		let builder = WetherEndpointBuilder().setLatitude(params.lat).setLongitude(params.lon).setTimeZone(params.timeZone)
 
 		let endpoint = try builder.build()
-		return try await requestProvider.execute(endpoint: endpoint)
+		let result: WeatherResponse = try await requestProvider.execute(endpoint: endpoint)
+		return result.toDomain()
 	}
 }
 

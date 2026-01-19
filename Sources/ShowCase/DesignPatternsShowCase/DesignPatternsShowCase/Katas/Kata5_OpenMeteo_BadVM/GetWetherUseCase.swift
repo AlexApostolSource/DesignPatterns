@@ -18,6 +18,6 @@ struct GetWetherUseCase: GetWetherUseCaseProtocol {
 
 	func getWether(params: GetWetherParams) async throws -> WeatherForecast {
 		let result = try await remoteDataSource.getWether(params: params)
-		return result.toDomain()
+		return result
 	}
 }
