@@ -6,15 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
-
-final class FlywieghtImage {
-	let image: Data
-
-	init(image: Data) {
-		self.image = image
-	}
-}
 
 final class Kata4FlyweightUseCase {
 	static let shared = Kata4FlyweightUseCase()

@@ -1,8 +1,7 @@
 import Foundation
 
-protocol PokemonDataImplementor {
-	func fetchList(limit: Int, offset: Int) async throws -> [PokemonDomain]
+protocol Kata4RemoteDataSourceProtocol {
+	func fetchPokemonsList(limit: Int, offset: Int) async throws -> PokemonsResponse
 	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
-	func clearCache()
 	func fetchImage(nameOrId: String) async throws -> Data
 }

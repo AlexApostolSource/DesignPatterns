@@ -5,13 +5,6 @@
 //  Created by Alex.personal on 6/11/25.
 //
 
-protocol Kata4RepositoryProtocol {
-	func fetchPokemonsList(limit: Int, offset: Int) async throws -> [PokemonDomain]
-	func fetchDetail(nameOrId: String) async throws -> PokemonDetail
-	func clearCache()
-	func cacheSize() -> Int
-}
-
 struct Kata4Repository: Kata4RepositoryProtocol {
 	private let remoteDataSource: Kata4RemoteDataSourceProtocol
 	private let localDataSource: Kata4LocalDataSourceProtocol
@@ -26,7 +19,7 @@ struct Kata4Repository: Kata4RepositoryProtocol {
 			return cachedData
 		} else {
 			let result = try await remoteDataSource.fetchPokemonsList(limit: limit, offset: offset)
-			let mappedResult = result.results.map {PokemonResponseMapper.map(from: $0)}
+			let mappedResult = result.results.map { PokemonResponseMapper.map(from: $0) }
 			localDataSource.saveList(mappedResult)
 			return mappedResult
 		}

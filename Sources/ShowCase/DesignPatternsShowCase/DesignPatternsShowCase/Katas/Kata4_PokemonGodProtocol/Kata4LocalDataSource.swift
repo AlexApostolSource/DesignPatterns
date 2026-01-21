@@ -6,15 +6,6 @@
 //
 import Foundation
 
-protocol Kata4LocalDataSourceProtocol {
-	func fetchList(limit: Int, offset: Int) -> [PokemonDomain]?
-	func saveList(_ list: [PokemonDomain])
-	func saveDetail(nameOrId: String, detail: PokemonDetail)
-	func clearCache()
-	func getDetail(nameOrId: String) -> PokemonDetail?
-	func currentCacheSize() -> Int
-}
-
 final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 	private let lock = NSRecursiveLock()
 	private var _listData: [PokemonDomain] = []
@@ -52,7 +43,6 @@ final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 		return Array(listData[start..<end])
 	}
 
-
 	func clearCache() {
 		listData.removeAll()
 		listDetail.removeAll()
@@ -73,9 +63,4 @@ final class Kata4LocalDataSource: Kata4LocalDataSourceProtocol {
 	func currentCacheSize() -> Int {
 		return listDetail.count
 	}
-}
-
-struct PokemonData {
-	let name: String
-	let url: String
 }

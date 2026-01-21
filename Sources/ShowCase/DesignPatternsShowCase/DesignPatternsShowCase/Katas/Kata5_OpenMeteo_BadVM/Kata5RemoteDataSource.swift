@@ -7,7 +7,7 @@
 import NetworkLayer
 import Foundation
 
-protocol WetherRemoteDataSourceProtocol {
+protocol WetherRemoteDataSourceProtocol: Sendable {
 	func getWether(params: GetWetherParams) async throws -> WeatherForecast
 }
 
@@ -21,7 +21,8 @@ struct Kata5Factory {
 	static func makeRemoteDataSource() -> WetherRemoteDataSourceProtocol {
 		let requestProvider = RequestProvider.basic
 		let dataSource = WetherRemoteDataSource(requestProvider: requestProvider)
-		let proxy = GetWetherProxy(remoteDataSource: dataSource)
+		let retryDecorator = WetherRetryDecorator(retries: 3, remoteDataSource: dataSource)
+		let proxy = GetWetherProxy(remoteDataSource: retryDecorator)
 		return proxy
 	}
 
@@ -34,7 +35,7 @@ struct Kata5Factory {
 	}
 }
 
-actor WetherRetryDecorator {
+actor WetherRetryDecorator: WetherRemoteDataSourceProtocol {
 	private let retries: Int
 	private let remoteDataSource: WetherRemoteDataSourceProtocol
 	private var currentRetries: Int = 0
