@@ -34,6 +34,36 @@ struct Kata5Factory {
 	}
 }
 
+actor WetherRetryDecorator {
+	private let retries: Int
+	private let remoteDataSource: WetherRemoteDataSourceProtocol
+	private var currentRetries: Int = 0
+	private var initialDelay: TimeInterval
+
+	init(retries: Int, remoteDataSource: WetherRemoteDataSourceProtocol,initialDelay: TimeInterval = 1.0) {
+		self.retries = retries
+		self.remoteDataSource = remoteDataSource
+		self.initialDelay = initialDelay
+	}
+
+	func getWether(params: GetWetherParams) async throws  -> WeatherForecast {
+		var currentDelay = initialDelay
+		for attempt in 1...retries {
+			do {
+				try Task.checkCancellation()
+				return try await remoteDataSource.getWether(params: params)
+			} catch {
+				guard attempt < retries else {
+					throw error
+				}
+				try await Task.sleep(nanoseconds: UInt64(currentDelay * 1_000_000_000))
+
+				currentDelay *= 2.0
+			}
+		}
+		throw URLError(.unknown)
+	}
+}
 
 struct WetherRemoteDataSource: WetherRemoteDataSourceProtocol {
 	private let requestProvider: RequestProviderProtocol

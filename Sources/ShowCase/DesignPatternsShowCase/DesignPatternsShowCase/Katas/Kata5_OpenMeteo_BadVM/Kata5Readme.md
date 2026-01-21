@@ -22,8 +22,8 @@
 ### Obligatorios
 - **Abstract Factory**: crear dependencias del VM (prod/test).  check!
 - **Builder**: para la petición de pronóstico.  CHECK!
-- **Adapter**: para Open-Meteo (DTO → Dominio).
+- **Adapter**: para Open-Meteo (DTO → Dominio). check!
 
 ### Opcionales
-- **Proxy**: cache corta para respuestas idénticas (misma query).
+- **Proxy**: cache corta para respuestas idénticas (misma query).  check!
 
