@@ -11,7 +11,7 @@ import Combine
 @Observable
 final class Kata6ViewModel {
 	private let remoteDateSource: Kata6RemoteDataSourceProtocol
-	var spaceXLaunchData: [Launch] = []
+	var spaceXLaunchData: [LaunchDomain] = []
 
 
 	init(remoteDateSource: Kata6RemoteDataSourceProtocol) {
@@ -22,7 +22,7 @@ final class Kata6ViewModel {
 		do {
 			async let launchV5 = try await remoteDateSource.getLaunchV5()
 			async let launchV4 = try await remoteDateSource.getLaunchV4()
-			let data: [Launch] =  try await [launchV5, launchV4]
+			let data: [LaunchDomain] =  try await [launchV5, launchV4]
 			self.spaceXLaunchData = data
 		} catch {
 			print(error)

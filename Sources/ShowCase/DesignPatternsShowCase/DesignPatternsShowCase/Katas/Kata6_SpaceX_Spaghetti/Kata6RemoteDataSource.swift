@@ -19,8 +19,8 @@ struct Kata6Factory {
 }
 
 protocol Kata6RemoteDataSourceProtocol {
-	func getLaunchV5() async throws -> Launch
-	func getLaunchV4() async throws -> Launch
+	func getLaunchV5() async throws -> LaunchDomain
+	func getLaunchV4() async throws -> LaunchDomain
 }
 
 struct Kata6RemoteDataSource: Kata6RemoteDataSourceProtocol {
@@ -30,14 +30,16 @@ struct Kata6RemoteDataSource: Kata6RemoteDataSourceProtocol {
 		self.requestProvider = requestProvider
 	}
 
-	func getLaunchV5() async throws -> Launch {
+	func getLaunchV5() async throws -> LaunchDomain {
 		let endpoint = Kata6LaunchV5Endpoint()
-		return try await requestProvider.execute(endpoint: endpoint)
+		let result: Launch =  try await requestProvider.execute(endpoint: endpoint)
+		return LaunchMapper().map(dto: result)
 	}
 
-	func getLaunchV4() async throws -> Launch {
+	func getLaunchV4() async throws -> LaunchDomain {
 		let endpoint = Kata6LaunchV4Endpoint()
-		return try await requestProvider.execute(endpoint: endpoint)
+		let result: Launch =  try await requestProvider.execute(endpoint: endpoint)
+		return LaunchMapper().map(dto: result)
 	}
 }
 

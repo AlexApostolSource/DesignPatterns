@@ -23,21 +23,20 @@ struct SpaceXBadView: View {
 				.font(.largeTitle)
 			List {
 				Section(header: Text("Latest").font(.title)) {
-					ForEach(viewModel.spaceXLaunchData.filter({ !($0.upcoming ?? false) })) { data in
+					ForEach(viewModel.spaceXLaunchData.filter({$0.status == .success})) { data in
 						VStack(alignment: .leading, spacing: 10) {
-							Text("Name: \(data.name)")
-							Text("Date: \(data.dateUtc)")
-							Text("WebCast: \(data.links.webcast)")
+							Text("Date: \(data.name)")
+							Text("Date: \(data.date)")
+							Text("WebCast: \(data.links.webcast?.absoluteString ?? "N/A")")
 
 						}
 					}
 				}
-
 				Section(header: Text("UpComing").font(.title)) {
-					ForEach(viewModel.spaceXLaunchData.filter({ ($0.upcoming ?? false) })) { data in
+					ForEach(viewModel.spaceXLaunchData.filter({$0.status == .scheduled})) { data in
 						VStack(alignment: .leading, spacing: 10) {
 							Text("Name: \(data.name)")
-							Text("Date: \(data.dateUtc)")
+							Text("Date: \(data.date)")
 						}
 					}
 				}

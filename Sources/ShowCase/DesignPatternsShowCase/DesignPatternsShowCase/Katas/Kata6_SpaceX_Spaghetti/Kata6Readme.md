@@ -3,8 +3,9 @@
 ## Qué debes corregir
 
 ### Unificación de acceso (SRP)
-- Crear una sola fachada `SpaceXService` que oculte **v4/v5** y sus rutas.  
+- Crear una sola fachada `SpaceXService` que oculte **v4/v5** y sus rutas.   Done
 - Prohibir DTOs en la UI; exponer entidades de dominio homogéneas.
+
 
 ### Tolerancia a fallos
 - Implementar **circuit breaker** (abre tras N fallos, half-open con prueba).  
@@ -22,7 +23,7 @@
 
 ### Obligatorios
 - **Facade**: punto único para la UI.  
-- **Adapter**: normalizar diferencias v4/v5.  
+- **Adapter**: normalizar diferencias v4/v5.   Done
 - **Proxy**: circuit breaker + cache antitromba.
 
 ### Opcionales
