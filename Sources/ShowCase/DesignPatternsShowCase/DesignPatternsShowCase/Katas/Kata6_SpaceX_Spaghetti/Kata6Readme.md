@@ -8,7 +8,7 @@
 
 
 ### Tolerancia a fallos
-- Implementar **circuit breaker** (abre tras N fallos, half-open con prueba).  
+- Implementar **circuit breaker** (abre tras N fallos, half-open con prueba).  DONE
 - Manejar **rate-limit (429)** con backoff y cache de respuestas recientes.
 
 ### DIP / Testabilidad
@@ -28,5 +28,5 @@
 
 ### Opcionales
 - **Factory**: construir estrategias (fallback, backoff).  
-- **Mapper**: (no GoF formal, pero útil) aislado y reutilizable.
+- **Mapper**: (no GoF formal, pero útil) aislado y reutilizable. DONE
 

@@ -10,20 +10,17 @@ import Combine
 
 @Observable
 final class Kata6ViewModel {
-	private let remoteDateSource: Kata6RemoteDataSourceProtocol
+	private let proxy: Kata6NetwokProxyProtocol
 	var spaceXLaunchData: [LaunchDomain] = []
 
 
-	init(remoteDateSource: Kata6RemoteDataSourceProtocol) {
-		self.remoteDateSource = remoteDateSource
+	init(proxy: Kata6NetwokProxyProtocol) {
+		self.proxy = proxy
 	}
 
 	func getData() async {
 		do {
-			async let launchV5 = try await remoteDateSource.getLaunchV5()
-			async let launchV4 = try await remoteDateSource.getLaunchV4()
-			let data: [LaunchDomain] =  try await [launchV5, launchV4]
-			self.spaceXLaunchData = data
+			self.spaceXLaunchData = try await proxy.getLaunchData()
 		} catch {
 			print(error)
 		}

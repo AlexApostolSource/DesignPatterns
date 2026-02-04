@@ -14,7 +14,8 @@ struct Kata6Factory {
 	}
 
 	static func makeViewModel() -> Kata6ViewModel {
-		Kata6ViewModel(remoteDateSource: makeRemoteDataSource())
+		let proxy = Kata6NetwokProxy(remoteDatasource: makeRemoteDataSource())
+		return Kata6ViewModel(proxy: proxy)
 	}
 }
 
