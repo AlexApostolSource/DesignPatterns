@@ -15,7 +15,7 @@
 - Inyectar `HTTPClient`, política de backoff, reloj y almacenamiento.
 
 ### Consistencia
-- Mapeos únicos y testeados (v4/v5 → `Launch` de dominio).
+- Mapeos únicos y testeados (v4/v5 → `Launch` de dominio). Done
 
 ---
 

@@ -10,17 +10,17 @@ import Combine
 
 @Observable
 final class Kata6ViewModel {
-	private let proxy: Kata6NetwokProxyProtocol
+	private let launchDataProvider: Kata6LaunchDataProviderProtocol
 	var spaceXLaunchData: [LaunchDomain] = []
 
 
-	init(proxy: Kata6NetwokProxyProtocol) {
-		self.proxy = proxy
+	init(launchDataProvider: Kata6LaunchDataProviderProtocol) {
+		self.launchDataProvider = launchDataProvider
 	}
 
 	func getData() async {
 		do {
-			self.spaceXLaunchData = try await proxy.getLaunchData()
+			self.spaceXLaunchData = try await launchDataProvider.getLaunchData()
 		} catch {
 			print(error)
 		}

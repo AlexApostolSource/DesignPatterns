@@ -5,7 +5,11 @@
 //  Created by Alex.personal on 4/2/26.
 //
 
-protocol Kata6NetwokProxyProtocol {
+protocol Kata6LaunchDataProviderProtocol {
+	func getLaunchData() async throws -> [LaunchDomain]
+}
+
+protocol Kata6NetwokProxyProtocol: Kata6LaunchDataProviderProtocol {
 	func getLaunchData() async throws -> [LaunchDomain]
 }
 
