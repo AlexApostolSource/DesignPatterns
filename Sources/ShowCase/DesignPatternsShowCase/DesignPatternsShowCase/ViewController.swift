@@ -25,6 +25,7 @@ enum KataType: String, CaseIterable, Identifiable {
 	case pokemon = "Pokémon List (SwiftUI)"
 	case weather = "Weather App"
 	case spaceX = "SpaceX Launches"
+	case networkRequestHandler = "Network Request Handler"
 
 	var id: String { self.rawValue }
 
@@ -42,6 +43,8 @@ enum KataType: String, CaseIterable, Identifiable {
 			Kata5Factory.makeView()
 		case .spaceX:
 			SpaceXBadView()
+		case .networkRequestHandler:
+			NetworkRequestHandlerDemoView()
 		}
 	}
 }
